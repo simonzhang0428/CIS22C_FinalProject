@@ -384,7 +384,7 @@ public class BST<T extends Comparable<T>> {
 		}
 
 		inOrderPrint(node.left);
-		System.out.print(node.data + "\n");
+		System.out.print(node.data + " ");
 		inOrderPrint(node.right);
 	}
 
