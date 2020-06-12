@@ -113,17 +113,11 @@ public class Doctor implements Comparable<Doctor> {
      * If the two Doctors have the same name
      * returns compareTo of the names
      * Otherwise, returns compareTo of the npis
-     *
+     */
     @Override
-    public int compareTo(Doctor d) {
-        if (this.equals(d)) {
-            return 0;
-        } else if (!name.equals(d.name)) {
-            return name.compareTo(d.name);
-        } else {
-            return npi.compareTo(d.getNpi());
-        }
-    }*/
+    public int compareTo(Doctor doctor) {
+        return comparable.compareTo(doctor);
+    }
 
     public Comparable<Doctor> compareByPrimaryKey() {
         return doctor -> this.npi.compareTo(doctor.npi);
@@ -143,6 +137,9 @@ public class Doctor implements Comparable<Doctor> {
         this.comparable = comparable;
     }
 
+    public void setNPI(String npi) {
+        this.npi = npi;
+    }
 
     /***ADDITIONAL OPERATIONS***/
 
@@ -189,10 +186,5 @@ public class Doctor implements Comparable<Doctor> {
             sum += (int) npi.charAt(i);
         }
         return sum;
-    }
-
-    @Override
-    public int compareTo(Doctor doctor) {
-        return comparable.compareTo(doctor);
     }
 }
