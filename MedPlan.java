@@ -46,6 +46,12 @@ public class MedPlan {
 
                     System.out.print("Enter doctor's NPI: ");
                     String NPI = keyboardInput.nextLine();
+                    while (!containsCharacters(NPI)) {
+                        System.out.println("\nNPI should contain only integers!\n");
+
+                        System.out.print("Enter doctor's NPI: ");
+                        NPI = keyboardInput.nextLine();
+                    }
 
                     System.out.print("Enter doctor's gender: ");
                     String gender = keyboardInput.nextLine();
@@ -82,6 +88,12 @@ public class MedPlan {
 
                     System.out.print("Enter doctor's NPI: ");
                     String NPI = keyboardInput.nextLine();
+                    while (!containsCharacters(NPI)) {
+                        System.out.println("\nNPI should contain only integers!\n");
+
+                        System.out.print("Enter doctor's NPI: ");
+                        NPI = keyboardInput.nextLine();
+                    }
 
                     Doctor doc = new Doctor(name, NPI);
 
@@ -106,6 +118,12 @@ public class MedPlan {
 
                     System.out.print("Enter doctor's NPI: ");
                     String NPI = keyboardInput.nextLine();
+                    while (!containsCharacters(NPI)) {
+                        System.out.println("\nNPI should contain only integers!\n");
+
+                        System.out.print("Enter doctor's NPI: ");
+                        NPI = keyboardInput.nextLine();
+                    }
 
                     // This doctor object contains only NPI, so we could find it it hash table
                     Doctor dummy = new Doctor();
@@ -126,8 +144,9 @@ public class MedPlan {
                     System.out.println("Please select one of the following options:\n");
                     System.out.println("S1: Sorted by NPI number");
                     System.out.println("S2: Sorted by specialty");
-                    System.out.println("U: Unsorted");
+                    System.out.println("U: Unsorted\n");
 
+                    System.out.print("Enter your choice: ");
                     String choice = keyboardInput.nextLine();
 
                     switch (choice) {
@@ -183,5 +202,15 @@ public class MedPlan {
 
     private static void save(String path) {
         // save data somewhere
+    }
+
+    private static boolean containsCharacters(String npi) {
+        for(char c: npi.toCharArray()) {
+            if(!Character.isDigit(c)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
