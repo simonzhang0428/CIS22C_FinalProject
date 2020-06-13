@@ -101,8 +101,7 @@ public class Doctor implements Comparable<Doctor> {
             return false;
         } else {
             Doctor d = (Doctor) o;
-            return this.name.equals(d.name) &&
-                    this.npi.equals(d.getNpi());
+            return this.npi.equals(d.getNpi()) || this.name.equals(d.getName());
         }
     }
 
@@ -139,6 +138,10 @@ public class Doctor implements Comparable<Doctor> {
 
     public void setNPI(String npi) {
         this.npi = npi;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     /***ADDITIONAL OPERATIONS***/

@@ -1,7 +1,10 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class MedPlan {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
         final int DATABASE_SIZE = 25;
 
         BST<Doctor> bst1 = new BST<>();
@@ -9,8 +12,28 @@ public class MedPlan {
         Hash<Doctor> ht = new Hash<>(DATABASE_SIZE * 2); // thumb rule
         Scanner keyboardInput = new Scanner(System.in);
         boolean finished = false;
-        Scanner fileInput;
+        File file = new File("doctors.txt");
+        Scanner fileInput = new Scanner(file);
+
         // Populate database here
+        while (fileInput.hasNextLine()) {
+            String name = fileInput.nextLine();
+            String speciality = fileInput.nextLine();
+            String clinic = fileInput.nextLine();
+            String NPI = fileInput.nextLine();
+            String gender = fileInput.nextLine();
+            String isAccepting = fileInput.nextLine();
+
+            Doctor doctor = new Doctor(name, speciality, clinic, NPI, gender, isAccepting.equals("true"));
+            ht.insert(doctor);
+            bst1.insert(doctor);
+            doctor.setComparable(doctor.compareBySecondaryKey());
+            bst2.insert(doctor);
+
+            if (fileInput.hasNext()) {
+                fileInput.nextLine();
+            }
+        }
 
         System.out.println("Welcome to MedPlan!\n");
 
@@ -112,29 +135,60 @@ public class MedPlan {
                 }
                 case "S": {
                     System.out.println("\nSearching For a Doctor!\n"); // searching a doctor (by name and NPI maybe??)
+                    System.out.println("Please select one of the following options:\n");
+                    System.out.println("P: Search by a primary key (NPI)");
+                    System.out.println("S: Search by a secondary key (name)");
 
-                    System.out.print("Enter doctor's name: ");
-                    String name = keyboardInput.nextLine();
+                    System.out.print("\nEnter your choice: ");
+                    String choice = keyboardInput.nextLine();
 
-                    System.out.print("Enter doctor's NPI: ");
-                    String NPI = keyboardInput.nextLine();
-                    while (!containsCharacters(NPI)) {
-                        System.out.println("\nNPI should contain only integers!\n");
+                    switch (choice) {
+                        case "P": {
+                            System.out.print("Enter doctor's NPI: ");
+                            String NPI = keyboardInput.nextLine();
+                            while (!containsCharacters(NPI)) {
+                                System.out.println("\nNPI should contain only integers!\n");
 
-                        System.out.print("Enter doctor's NPI: ");
-                        NPI = keyboardInput.nextLine();
-                    }
+                                System.out.print("Enter doctor's NPI: ");
+                                NPI = keyboardInput.nextLine();
+                            }
 
-                    // This doctor object contains only NPI, so we could find it it hash table
-                    Doctor dummy = new Doctor();
-                    dummy.setNPI(NPI);
+                            // This doctor object contains only NPI, so we could find it it hash table
+                            Doctor dummy = new Doctor();
+                            dummy.setNPI(NPI);
 
-                    boolean isPresent = ht.search(dummy) != -1;
+                            int index = ht.search(dummy);
 
-                    if (isPresent) {
-                        System.out.println(name + " with NPI " + NPI + " is in the database!");
-                    } else {
-                        System.out.println(name + " with NPI " + NPI + " is not in the database!");
+                            if(index == -1) {
+                                System.out.println(NPI + " is not in the database!");
+                            } else {
+                                System.out.println(NPI + " is in the database!");
+                                ht.printBucket(index);
+                            }
+
+                            break;
+                        }
+                        case "S": {
+                            System.out.print("Enter doctor's name: ");
+                            String name = keyboardInput.nextLine();
+
+                            Doctor dummy = new Doctor();
+                            dummy.setName(name);
+                            dummy.setComparable(dummy.compareBySecondaryKey());
+
+                            ArrayList<Doctor> docs = bst2.findAllMatches(dummy);
+
+                            if (docs.size() == 0) {
+                                System.out.println("\nNo doctors with name " + name + " were found");
+                            } else {
+                                System.out.println("\n" + docs.size() + " doctors with name " + name + " were found\n");
+                                for (Doctor doc: docs) {
+                                    System.out.println(doc);
+                                }
+                            }
+
+                            break;
+                        }
                     }
 
                     break;
@@ -205,10 +259,17 @@ public class MedPlan {
     }
 
     private static boolean containsCharacters(String npi) {
-        for(char c: npi.toCharArray()) {
-            if(!Character.isDigit(c)) {
+        for (char c : npi.toCharArray()) {
+            if (!Character.isDigit(c)) {
                 return false;
             }
+        }
+
+        int a = 2;
+        int b = 2;
+
+        if (a != b) {
+            System.out.println("OK");
         }
 
         return true;
