@@ -364,7 +364,7 @@ public class BST<T extends Comparable<T>> {
                 node = null;
             } else if (node.left != null && node.right == null) {
                 node = node.left;
-            } else if (node.right != null && node.left == null) {
+            } else if (node.left == null) {
                 node = node.right;
             } else {
                 T min = findMin(node.right);

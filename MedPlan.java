@@ -40,6 +40,7 @@ public class MedPlan {
 
         System.out.println("Welcome to MedPlan!\n");
 
+        // While the users doesn't prompt "Q" in the console to quit, request further commands
         while (!finished) {
             System.out.println("Please select from one of the following options:\n");
 
@@ -50,14 +51,16 @@ public class MedPlan {
             System.out.println("S: Search for a doctor");
 
             // three options: unsorted(hash table), sorted1(by primary key), sorted2(by secondary key)
-            System.out.println("P: Print doctors");
-            System.out.println("W: Write MedPlan database to file");
+            System.out.println("P: Display doctors");
+            System.out.println("W: Write MedPlan database to a file");
             System.out.println("Q: Quit\n");
 
             System.out.print("Enter your choice: ");
             String command = keyboardInput.nextLine();
 
             switch (command) {
+
+                // Adding a new doctor object
                 case "A": {
                     System.out.println("\nAdding New Doctor!\n"); // adding new doctor
 
@@ -106,36 +109,51 @@ public class MedPlan {
                     // After we added all this, add doctor object to both BST's, and HT
                     break;
                 }
+
+                // Removing a doctor
                 case "D": {
                     System.out.println("\nRemoving a Doctor!\n"); // removing a doctor (by name and NPI maybe??)
 
                     System.out.print("Enter doctor's name: ");
                     String name = keyboardInput.nextLine();
 
-                    System.out.print("Enter doctor's NPI: ");
-                    String NPI = keyboardInput.nextLine();
-                    while (containsCharacters(NPI)) {
-                        System.out.println("\nNPI should contain only integers!\n");
+                    // Create a doctor with a name and a dummy NPI
+                    Doctor doc = new Doctor(name, "0000000000");
+                    doc.setComparable(doc.compareBySecondaryKey());
 
-                        System.out.print("Enter doctor's NPI: ");
-                        NPI = keyboardInput.nextLine();
-                    }
+                    // Since name is a secondary key, there can be several matches
+                    ArrayList<Doctor> matches = bst2.findAllMatches(doc);
 
-                    Doctor doc = new Doctor(name, NPI);
+                    System.out.println(matches.size() + " doctors found!\n");
 
-                    if (ht.search(doc) == -1) {
-                        System.out.println("Doctor " + name + " with NPI " + NPI + " is not in the database, can't remove!\n");
+                    // If no users found -> there is nothing to remove
+                    if (matches.size() != 0) {
+                        for (int i = 0; i < matches.size(); i++) {
+                            System.out.println((i + 1) + ". " + matches.get(i).getName() + ": " + matches.get(i).getNpi());
+
+                            Doctor removedDoctor = matches.get(i);
+
+                            ht.remove(removedDoctor);
+                            removedDoctor.setComparable(removedDoctor.compareByPrimaryKey());
+                            bst1.remove(removedDoctor);
+
+                            removedDoctor.setComparable(removedDoctor.compareBySecondaryKey());
+                            bst2.remove(removedDoctor);
+                        }
+
+                        if (matches.size() == 1) {
+                            System.out.println("\n1 doctors was removed from the database");
+                        } else {
+                            System.out.println("\n" + matches.size() + " doctors were removed from the database");
+                        }
                     } else {
-                        ht.remove(doc);
-                        bst1.remove(doc);
-                        doc.setComparable(doc.compareBySecondaryKey());
-                        bst2.remove(doc);
-                        System.out.println("Doctor " + name + " is removed from the database!\n");
+                        System.out.println("There are no doctors that can be removed from the database!\n");
                     }
 
-                    // delete or deal with a case if doctor is not in the database
                     break;
                 }
+
+                // Searching for a doctor
                 case "S": {
                     System.out.println("\nSearching For a Doctor!\n"); // searching a doctor (by name and NPI maybe??)
                     System.out.println("Please select one of the following options:\n");
@@ -146,6 +164,7 @@ public class MedPlan {
                     String choice = keyboardInput.nextLine();
 
                     switch (choice) {
+                        // Searching for a doctor by a primary key (NPI)
                         case "P": {
                             System.out.print("Enter doctor's NPI: ");
                             String NPI = keyboardInput.nextLine();
@@ -158,19 +177,24 @@ public class MedPlan {
 
                             // This doctor object contains only NPI, so we could find it it hash table
                             Doctor dummy = new Doctor();
+                            dummy.setComparable(dummy.compareByPrimaryKey());
                             dummy.setNPI(NPI);
 
-                            int index = ht.search(dummy);
+                            Doctor dbDoctor = ht.search(dummy);
 
-                            if (index == -1) {
-                                System.out.println(NPI + " is not in the database!");
+                            System.out.println();
+
+                            if (dbDoctor != null) {
+                                System.out.println("A doctor with NPI " + NPI + " is in the database!\n");
+                                System.out.println(dbDoctor);
                             } else {
-                                System.out.println(NPI + " is in the database!");
-                                ht.printBucket(index);
+                                System.out.println("A doctor with NPI " + NPI + " is not in the database!\n");
                             }
 
                             break;
                         }
+
+                        // Searching for a doctor by a secondary key (Name)
                         case "S": {
                             System.out.print("Enter doctor's name: ");
                             String name = keyboardInput.nextLine();
@@ -200,7 +224,7 @@ public class MedPlan {
                     System.out.println("\nPrinting data!\n");
                     System.out.println("Please select one of the following options:\n");
                     System.out.println("S1: Sorted by NPI number");
-                    System.out.println("S2: Sorted by specialty");
+                    System.out.println("S2: Sorted by name");
                     System.out.println("U: Unsorted\n");
 
                     System.out.print("Enter your choice: ");
@@ -253,15 +277,19 @@ public class MedPlan {
         }
 
         // end
-        System.out.println("\nGoodbye!");
         // save before quitting - required by professor -> call save function
-        save(ht, "savedDatabase.txt");
+        save(ht, "autoSave.txt");
         keyboardInput.close();
+
+        System.out.println("Goodbye!");
     }
 
     private static void save(Hash<Doctor> hash, String path) throws FileNotFoundException {
         ArrayList<Doctor> docs = hash.getAllObjects();
         String result = getStringData(docs);
+
+        System.out.println("\nThe following data will be saved:\n");
+        System.out.println(result);
 
         PrintStream out = new PrintStream(new FileOutputStream(path));
         out.print(result);
