@@ -145,6 +145,27 @@ public class Hash<T extends Comparable<T>> {
     }
 
     /**
+     * This function retrieves all the objects from a has table and places them into an arraylist
+     *
+     * @return an arraylist with objects from a hash table
+     */
+    public ArrayList<T> getAllObjects() {
+        ArrayList<T> result = new ArrayList<>();
+
+        for (int i = 0; i < Table.size(); i++) {
+            List<T> list = Table.get(i);
+            list.placeIterator();
+
+            while (!list.offEnd()) {
+                result.add(list.getIterator());
+                list.advanceIterator();
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Starting at the first bucket, and continuing in order until the last bucket,
      * concatenates all elements at all buckets into one String
      */

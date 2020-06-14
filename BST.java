@@ -191,25 +191,38 @@ public class BST<T extends Comparable<T>> {
         return search(data, root);
     }
 
+    /**
+     * Searches for all matches of an object in a tree
+     *
+     * @param data is the value to search for
+     * @return a list of objects found in the tree
+     */
     public ArrayList<T> findAllMatches(T data) {
-		ArrayList<T> list = new ArrayList<>();
+        ArrayList<T> list = new ArrayList<>();
 
-		findAllMatchesHelper(data, root, list);
+        findAllMatchesHelper(data, root, list);
 
-		return list;
+        return list;
     }
 
+    /**
+     * Helper function to find all matches of an object in a tree
+     *
+     * @param data is the value to search for
+     * @param node is a tree root
+     * @param list is an arraylist, in which objects will be added
+     */
     private void findAllMatchesHelper(T data, Node node, ArrayList<T> list) {
-    	if(node == null) {
-    		return;
-		}
+        if (node == null) {
+            return;
+        }
 
-    	findAllMatchesHelper(data, node.left, list);
-    	if(node.data.equals(data)) {
-    		list.add(node.data);
-		}
-    	findAllMatchesHelper(data, node.right, list);
-	}
+        findAllMatchesHelper(data, node.left, list);
+        if (node.data.equals(data)) {
+            list.add(node.data);
+        }
+        findAllMatchesHelper(data, node.right, list);
+    }
 
     /**
      * Helper method for the search method

@@ -119,11 +119,21 @@ public class Doctor implements Comparable<Doctor> {
     }
 
     public Comparable<Doctor> compareByPrimaryKey() {
-        return doctor -> this.npi.compareTo(doctor.npi);
+        return new Comparable<Doctor>() {
+            @Override
+            public int compareTo(Doctor doctor) {
+                return Doctor.this.npi.compareTo(doctor.npi);
+            }
+        };
     }
 
     public Comparable<Doctor> compareBySecondaryKey() {
-        return doctor -> this.name.compareTo(doctor.name);
+        return new Comparable<Doctor>() {
+            @Override
+            public int compareTo(Doctor doctor) {
+                return Doctor.this.name.compareTo(doctor.name);
+            }
+        };
     }
 
     /***MUTATORS***/

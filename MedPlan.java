@@ -1,5 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -12,6 +14,7 @@ public class MedPlan {
         Hash<Doctor> ht = new Hash<>(DATABASE_SIZE * 2); // thumb rule
         Scanner keyboardInput = new Scanner(System.in);
         boolean finished = false;
+
         File file = new File("doctors.txt");
         Scanner fileInput = new Scanner(file);
 
@@ -69,7 +72,7 @@ public class MedPlan {
 
                     System.out.print("Enter doctor's NPI: ");
                     String NPI = keyboardInput.nextLine();
-                    while (!containsCharacters(NPI)) {
+                    while (containsCharacters(NPI)) {
                         System.out.println("\nNPI should contain only integers!\n");
 
                         System.out.print("Enter doctor's NPI: ");
@@ -111,7 +114,7 @@ public class MedPlan {
 
                     System.out.print("Enter doctor's NPI: ");
                     String NPI = keyboardInput.nextLine();
-                    while (!containsCharacters(NPI)) {
+                    while (containsCharacters(NPI)) {
                         System.out.println("\nNPI should contain only integers!\n");
 
                         System.out.print("Enter doctor's NPI: ");
@@ -146,7 +149,7 @@ public class MedPlan {
                         case "P": {
                             System.out.print("Enter doctor's NPI: ");
                             String NPI = keyboardInput.nextLine();
-                            while (!containsCharacters(NPI)) {
+                            while (containsCharacters(NPI)) {
                                 System.out.println("\nNPI should contain only integers!\n");
 
                                 System.out.print("Enter doctor's NPI: ");
@@ -159,7 +162,7 @@ public class MedPlan {
 
                             int index = ht.search(dummy);
 
-                            if(index == -1) {
+                            if (index == -1) {
                                 System.out.println(NPI + " is not in the database!");
                             } else {
                                 System.out.println(NPI + " is in the database!");
@@ -181,8 +184,8 @@ public class MedPlan {
                             if (docs.size() == 0) {
                                 System.out.println("\nNo doctors with name " + name + " were found");
                             } else {
-                                System.out.println("\n" + docs.size() + " doctors with name " + name + " were found\n");
-                                for (Doctor doc: docs) {
+                                System.out.println("\n" + docs.size() + " doctor(s) with name " + name + " were found\n");
+                                for (Doctor doc : docs) {
                                     System.out.println(doc);
                                 }
                             }
@@ -235,7 +238,7 @@ public class MedPlan {
                     String path = keyboardInput.nextLine();
 
                     // call save function
-                    save(path);
+                    save(ht, path);
                     break;
                 }
                 case "Q": {
@@ -250,28 +253,43 @@ public class MedPlan {
         }
 
         // end
+        System.out.println("\nGoodbye!");
         // save before quitting - required by professor -> call save function
+        save(ht, "savedDatabase.txt");
         keyboardInput.close();
     }
 
-    private static void save(String path) {
-        // save data somewhere
+    private static void save(Hash<Doctor> hash, String path) throws FileNotFoundException {
+        ArrayList<Doctor> docs = hash.getAllObjects();
+        String result = getStringData(docs);
+
+        PrintStream out = new PrintStream(new FileOutputStream(path));
+        out.print(result);
+    }
+
+    private static String getStringData(ArrayList<Doctor> docs) {
+        StringBuilder sb = new StringBuilder();
+
+        for (Doctor doc : docs) {
+            sb.append(doc.getName()).append("\n");
+            sb.append(doc.getSpecialty()).append("\n");
+            sb.append(doc.getClinic()).append("\n");
+            sb.append(doc.getNpi()).append("\n");
+            sb.append(doc.getGender()).append("\n");
+            sb.append(doc.isAcceptingNewPts()).append("\n");
+            sb.append("\n");
+        }
+
+        return sb.toString();
     }
 
     private static boolean containsCharacters(String npi) {
         for (char c : npi.toCharArray()) {
             if (!Character.isDigit(c)) {
-                return false;
+                return true;
             }
         }
 
-        int a = 2;
-        int b = 2;
-
-        if (a != b) {
-            System.out.println("OK");
-        }
-
-        return true;
+        return false;
     }
 }
