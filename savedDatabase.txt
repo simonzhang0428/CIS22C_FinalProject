@@ -1,0 +1,140 @@
+Rebecca Fazilat
+Pedatrics
+Palo Alto Medical Foundation
+1235105537
+Female
+true
+
+Quynh Nguyen
+Ophthalmology
+Stanford Hospital
+1831153451
+Female
+true
+
+Meredith Grey
+General Surgery
+Grey Sloan
+1427051077
+Female
+true
+
+Derek Shepherd
+Neurosurgery
+Seattle Grace
+1063837144
+Male
+false
+
+Neela Rasgotra
+General Surgery
+County General
+1932192713
+Female
+false
+
+John Dorian
+Internal Medicine
+Sacred Heart
+1043248818
+Male
+true
+
+Leonard H. McCoy
+General Surgery
+USS Enterprise
+1558444216
+Male
+false
+
+Drake Ramoray
+Neurosurgery
+Days of our Lives Hospital
+1902805674
+Male
+false
+
+Amy Oro
+Dermatology
+Stanford Hospital
+1447288071
+Female
+true
+
+Doug Ross
+Pediatric Emergency Medicine
+University of Washington Medical Center
+1669470290
+Male
+false
+
+Kerry Weaver
+Emergency Medicine
+County General
+1467445338
+Female
+false
+
+Doogie Howser
+General Surgery
+Eastman Medical Center
+1205929684
+Male
+false
+
+Alex Karev
+Pediatric Surgery
+Grey Sloan
+1497758122
+Male
+true
+
+Gregory House
+Infectious Disease
+Princeton Plainsboro
+1659450773
+Male
+true
+
+Addison Montgomery
+Obstetrics/Gynecology
+Oceanside Wellness Group 
+1316975618
+Female
+true
+
+Shaun Murphy
+Pathology
+St. Bonaventure Hospital
+1316971757
+Male
+true
+
+Miranda Bailey
+General Surgery
+Grey Sloan
+1245319599
+Female
+true
+
+Cristina Yang
+Cardiothoracic Surgery
+Seattle Grace
+1770589525
+Female
+false
+
+Mindy Lahiri
+Obstetrics/Gynecology
+Shulman and Associates
+1992799332
+Female
+true
+
+Dyron Jue
+Endocrinology
+Regional Medical Center
+1679567796
+Male
+true
+
