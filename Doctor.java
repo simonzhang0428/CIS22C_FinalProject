@@ -101,8 +101,7 @@ public class Doctor implements Comparable<Doctor> {
             return false;
         } else {
             Doctor d = (Doctor) o;
-            return this.name.equals(d.name) &&
-                    this.npi.equals(d.getNpi());
+            return this.npi.equals(d.getNpi()) || this.name.equals(d.getName());
         }
     }
 
@@ -120,11 +119,21 @@ public class Doctor implements Comparable<Doctor> {
     }
 
     public Comparable<Doctor> compareByPrimaryKey() {
-        return doctor -> this.npi.compareTo(doctor.npi);
+        return new Comparable<Doctor>() {
+            @Override
+            public int compareTo(Doctor doctor) {
+                return Doctor.this.npi.compareTo(doctor.npi);
+            }
+        };
     }
 
     public Comparable<Doctor> compareBySecondaryKey() {
-        return doctor -> this.name.compareTo(doctor.name);
+        return new Comparable<Doctor>() {
+            @Override
+            public int compareTo(Doctor doctor) {
+                return Doctor.this.name.compareTo(doctor.name);
+            }
+        };
     }
 
     /***MUTATORS***/
@@ -139,6 +148,10 @@ public class Doctor implements Comparable<Doctor> {
 
     public void setNPI(String npi) {
         this.npi = npi;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     /***ADDITIONAL OPERATIONS***/
