@@ -1,5 +1,3 @@
-import java.text.DecimalFormat;
-
 public class Doctor implements Comparable<Doctor> {
     private String name;
     private String specialty;
@@ -49,7 +47,7 @@ public class Doctor implements Comparable<Doctor> {
      * @param npi  the NPI (National Provider Identifier) of the Doctor
      */
     public Doctor(String name, String npi) {
-        this(name, "Unknown specialty", "Unknown clinic", npi,
+            this(name, "Unknown specialty", "Unknown clinic", npi,
                 "Unknown gender", false);
     }
 
@@ -158,14 +156,12 @@ public class Doctor implements Comparable<Doctor> {
      */
     @Override
     public String toString() {
-        DecimalFormat format = new DecimalFormat("###,###");
-
         String result = "Name: " + name +
                 "\nSpecialty: " + specialty +
                 "\nClinic: " + clinic +
                 "\nNPI: " + npi + // will format later
                 "\nGender: " + gender +
-                "\nAccepting new patients: " + acceptingNewPts;
+                "\nAccepting new patients: " + (acceptingNewPts ? "Yes" : "No");
         return result + "\n";
     }
 

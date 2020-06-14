@@ -6,14 +6,18 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class MedPlan {
-    public static void main(String[] args) throws FileNotFoundException {
-        final int DATABASE_SIZE = 25;
 
-        BST<Doctor> bst1 = new BST<>();
-        BST<Doctor> bst2 = new BST<>();
-        Hash<Doctor> ht = new Hash<>(DATABASE_SIZE * 2); // thumb rule
+    private final int DATABASE_SIZE = 25;
+
+    private BST<Doctor> bst1 = new BST<>();
+    private BST<Doctor> bst2 = new BST<>();
+    private Hash<Doctor> ht = new Hash<>(DATABASE_SIZE * 2); // thumb rule
+    private boolean finished = false;
+
+    public static void main(String[] args) throws FileNotFoundException {
+        MedPlan medPlan = new MedPlan();
+
         Scanner keyboardInput = new Scanner(System.in);
-        boolean finished = false;
 
         File file = new File("doctors.txt");
         Scanner fileInput = new Scanner(file);
@@ -21,17 +25,17 @@ public class MedPlan {
         // Populate database here
         while (fileInput.hasNextLine()) {
             String name = fileInput.nextLine();
-            String speciality = fileInput.nextLine();
+            String specialty = fileInput.nextLine();
             String clinic = fileInput.nextLine();
             String NPI = fileInput.nextLine();
             String gender = fileInput.nextLine();
             String isAccepting = fileInput.nextLine();
 
-            Doctor doctor = new Doctor(name, speciality, clinic, NPI, gender, isAccepting.equals("true"));
-            ht.insert(doctor);
-            bst1.insert(doctor);
+            Doctor doctor = new Doctor(name, specialty, clinic, NPI, gender, isAccepting.equals("true"));
+            medPlan.ht.insert(doctor);
+            medPlan.bst1.insert(doctor);
             doctor.setComparable(doctor.compareBySecondaryKey());
-            bst2.insert(doctor);
+            medPlan.bst2.insert(doctor);
 
             if (fileInput.hasNext()) {
                 fileInput.nextLine();
@@ -41,7 +45,7 @@ public class MedPlan {
         System.out.println("Welcome to MedPlan!\n");
 
         // While the users doesn't prompt "Q" in the console to quit, request further commands
-        while (!finished) {
+        while (!medPlan.finished) {
             System.out.println("Please select from one of the following options:\n");
 
             System.out.println("A: Add new doctor");
@@ -51,7 +55,7 @@ public class MedPlan {
             System.out.println("S: Search for a doctor");
 
             // three options: unsorted(hash table), sorted1(by primary key), sorted2(by secondary key)
-            System.out.println("P: Display doctors");
+            System.out.println("P: Print doctors");
             System.out.println("W: Write MedPlan database to a file");
             System.out.println("Q: Quit\n");
 
@@ -91,16 +95,16 @@ public class MedPlan {
                     // After we got all the data, create a doctor object and save
                     // to BST1, BST2, and Hash Table (ht)
                     Doctor doc = new Doctor(name, specialty, clinic, NPI, gender, isAccepting);
-                    ht.insert(doc); // inserting a doctor into a hash table
+                    medPlan.ht.insert(doc); // inserting a doctor into a hash table
 
                     // insert into bst1 (comparing by primary (npi) key)
                     // Comparable is set to comparing by NPI by default! (in constructor)
-                    bst1.insert(doc);
+                    medPlan.bst1.insert(doc);
 
                     // after we inserted a doctor object by npi, change comparable method
                     // and insert to bst2 comparing by name, not NPI !
                     doc.setComparable(doc.compareBySecondaryKey());
-                    bst2.insert(doc); // insert into bst2 (comparing by secondary (name) key)
+                    medPlan.bst2.insert(doc); // insert into bst2 (comparing by secondary (name) key)
 
                     System.out.println("\n" + name + " has been added!\n");
 
@@ -122,7 +126,7 @@ public class MedPlan {
                     doc.setComparable(doc.compareBySecondaryKey());
 
                     // Since name is a secondary key, there can be several matches
-                    ArrayList<Doctor> matches = bst2.findAllMatches(doc);
+                    ArrayList<Doctor> matches = medPlan.bst2.findAllMatches(doc);
 
                     System.out.println(matches.size() + " doctors found!\n");
 
@@ -133,12 +137,12 @@ public class MedPlan {
 
                             Doctor removedDoctor = matches.get(i);
 
-                            ht.remove(removedDoctor);
+                            medPlan.ht.remove(removedDoctor);
                             removedDoctor.setComparable(removedDoctor.compareByPrimaryKey());
-                            bst1.remove(removedDoctor);
+                            medPlan.bst1.remove(removedDoctor);
 
                             removedDoctor.setComparable(removedDoctor.compareBySecondaryKey());
-                            bst2.remove(removedDoctor);
+                            medPlan.bst2.remove(removedDoctor);
                         }
 
                         if (matches.size() == 1) {
@@ -180,7 +184,7 @@ public class MedPlan {
                             dummy.setComparable(dummy.compareByPrimaryKey());
                             dummy.setNPI(NPI);
 
-                            Doctor dbDoctor = ht.search(dummy);
+                            Doctor dbDoctor = medPlan.ht.search(dummy);
 
                             System.out.println();
 
@@ -203,7 +207,7 @@ public class MedPlan {
                             dummy.setName(name);
                             dummy.setComparable(dummy.compareBySecondaryKey());
 
-                            ArrayList<Doctor> docs = bst2.findAllMatches(dummy);
+                            ArrayList<Doctor> docs = medPlan.bst2.findAllMatches(dummy);
 
                             if (docs.size() == 0) {
                                 System.out.println("\nNo doctors with name " + name + " were found");
@@ -223,29 +227,29 @@ public class MedPlan {
                 case "P": {
                     System.out.println("\nPrinting data!\n");
                     System.out.println("Please select one of the following options:\n");
+                    System.out.println("U: Unsorted");
                     System.out.println("S1: Sorted by NPI number");
-                    System.out.println("S2: Sorted by name");
-                    System.out.println("U: Unsorted\n");
+                    System.out.println("S2: Sorted by name\n");
 
                     System.out.print("Enter your choice: ");
                     String choice = keyboardInput.nextLine();
 
                     switch (choice) {
+                        case "U": {
+                            System.out.println();
+                            System.out.println(medPlan.ht);
+                            break;
+                        }
                         case "S1": {
                             System.out.println();
-                            System.out.println("There are " + bst1.getSize() + " doctors in the database\n");
-                            bst1.inOrderPrint();
+                            System.out.println("There are " + medPlan.bst1.getSize() + " doctors in the database\n");
+                            medPlan.bst1.inOrderPrint();
                             break;
                         }
                         case "S2": {
                             System.out.println();
-                            System.out.println("There are " + bst1.getSize() + " doctors in the database\n");
-                            bst2.inOrderPrint();
-                            break;
-                        }
-                        case "U": {
-                            System.out.println();
-                            System.out.println(ht);
+                            System.out.println("There are " + medPlan.bst1.getSize() + " doctors in the database\n");
+                            medPlan.bst2.inOrderPrint();
                             break;
                         }
                         default: {
@@ -262,11 +266,11 @@ public class MedPlan {
                     String path = keyboardInput.nextLine();
 
                     // call save function
-                    save(ht, path);
+                    save(medPlan.ht, path);
                     break;
                 }
                 case "Q": {
-                    finished = true;
+                    medPlan.finished = true;
                     break;
                 }
                 default: {
@@ -278,7 +282,7 @@ public class MedPlan {
 
         // end
         // save before quitting - required by professor -> call save function
-        save(ht, "autoSave.txt");
+        save(medPlan.ht, "autoSave.txt");
         keyboardInput.close();
 
         System.out.println("Goodbye!");

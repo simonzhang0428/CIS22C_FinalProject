@@ -192,39 +192,6 @@ public class BST<T extends Comparable<T>> {
     }
 
     /**
-     * Searches for all matches of an object in a tree
-     *
-     * @param data is the value to search for
-     * @return a list of objects found in the tree
-     */
-    public ArrayList<T> findAllMatches(T data) {
-        ArrayList<T> list = new ArrayList<>();
-
-        findAllMatchesHelper(data, root, list);
-
-        return list;
-    }
-
-    /**
-     * Helper function to find all matches of an object in a tree
-     *
-     * @param data is the value to search for
-     * @param node is a tree root
-     * @param list is an arraylist, in which objects will be added
-     */
-    private void findAllMatchesHelper(T data, Node node, ArrayList<T> list) {
-        if (node == null) {
-            return;
-        }
-
-        findAllMatchesHelper(data, node.left, list);
-        if (node.data.equals(data)) {
-            list.add(node.data);
-        }
-        findAllMatchesHelper(data, node.right, list);
-    }
-
-    /**
      * Helper method for the search method
      *
      * @param data the data to search for
@@ -245,6 +212,39 @@ public class BST<T extends Comparable<T>> {
         } else {
             return search(data, node.right);
         }
+    }
+
+    /**
+     * Searches for all matches of an object in a tree
+     *
+     * @param data is the value to search for
+     * @return a list of objects found in the tree
+     */
+    public ArrayList<T> findAllMatches(T data) {
+        ArrayList<T> list = new ArrayList<>();
+
+        findAllMatches(data, root, list);
+
+        return list;
+    }
+
+    /**
+     * Helper function to find all matches of an object in a tree
+     *
+     * @param data is the value to search for
+     * @param node is a tree root
+     * @param list is an arraylist, in which objects will be added
+     */
+    private void findAllMatches(T data, Node node, ArrayList<T> list) {
+        if (node == null) {
+            return;
+        }
+
+        findAllMatches(data, node.left, list);
+        if (node.data.equals(data)) {
+            list.add(node.data);
+        }
+        findAllMatches(data, node.right, list);
     }
 
     /**
