@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 public class Doctor implements Comparable<Doctor> {
     private String name;
     private String specialty;
@@ -7,7 +5,6 @@ public class Doctor implements Comparable<Doctor> {
     private String npi;
     private String gender;
     private boolean acceptingNewPts;
-    private ArrayList<String> acceptedInsurancePlans;
     private Comparable<Doctor> comparable;
 
     /***CONSTRUCTORS***/
@@ -32,8 +29,6 @@ public class Doctor implements Comparable<Doctor> {
         this.gender = gender;
         this.acceptingNewPts = acceptingNewPts;
         this.comparable = compareByPrimaryKey();
-        //Initialize ArrayList, will figure out how to add data later
-        acceptedInsurancePlans = new ArrayList<>(4);
     }
 
     /**
@@ -52,7 +47,7 @@ public class Doctor implements Comparable<Doctor> {
      * @param npi  the NPI (National Provider Identifier) of the Doctor
      */
     public Doctor(String name, String npi) {
-        this(name, "Unknown specialty", "Unknown clinic", npi,
+            this(name, "Unknown specialty", "Unknown clinic", npi,
                 "Unknown gender", false);
     }
 
@@ -82,10 +77,6 @@ public class Doctor implements Comparable<Doctor> {
         return acceptingNewPts;
     }
 
-    public ArrayList<String> getCompatibleInsurancePlans() {
-        return acceptedInsurancePlans;
-    }
-
     /**
      * Determines whether two Doctor objects are
      * equal by comparing name and npis
@@ -101,10 +92,10 @@ public class Doctor implements Comparable<Doctor> {
             return false;
         } else {
             Doctor d = (Doctor) o;
-            return this.npi.equals(d.getNpi()) || this.name.equals(d.getName());
+
+            return this.getNpi().equals(d.getNpi()) || this.getName().equals(d.getName());
         }
     }
-
 
     /**
      * Compares two Doctors.
@@ -138,10 +129,6 @@ public class Doctor implements Comparable<Doctor> {
 
     /***MUTATORS***/
 
-    public void addInsurancePlan(String plan) {
-        acceptedInsurancePlans.add(plan);
-    }
-
     public void setComparable(Comparable<Doctor> comparable) {
         this.comparable = comparable;
     }
@@ -169,18 +156,12 @@ public class Doctor implements Comparable<Doctor> {
      */
     @Override
     public String toString() {
-        //We will add a DecimalFormat for npi formatting
         String result = "Name: " + name +
                 "\nSpecialty: " + specialty +
                 "\nClinic: " + clinic +
                 "\nNPI: " + npi + // will format later
                 "\nGender: " + gender +
-                "\nAccepting new patients: " + acceptingNewPts +
-                "\nAccepted insurance plans: ";
-        for (int i = 0; i < acceptedInsurancePlans.size() - 1; i++) {
-            result += acceptedInsurancePlans.get(i) + ", ";
-        }
-        //result += acceptedInsurancePlans.get(acceptedInsurancePlans.size() - 1);
+                "\nAccepting new patients: " + (acceptingNewPts ? "Yes" : "No");
         return result + "\n";
     }
 

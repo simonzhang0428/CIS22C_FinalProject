@@ -68,19 +68,25 @@ public class Hash<T extends Comparable<T>> {
      * @return the index in the Table at which the element is located or -1 if it is
      * not found
      */
-    public int search(T t) {
+    public T search(T t) {
         if (t == null) {
-            return -1;
+            return null;
         }
 
         int index = hash(t);
         List<T> list = Table.get(index);
 
-        if (list.linearSearch(t) != -1) {
-            return index;
-        } else {
-            return -1;
+        list.placeIterator();
+
+        while (!list.offEnd()) {
+            if(list.getIterator().equals(t)) {
+                return list.getIterator();
+            }
+
+            list.advanceIterator();
         }
+
+        return null;
     }
 
     /** Mutators */
