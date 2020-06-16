@@ -1,11 +1,13 @@
-public class Doctor implements Comparable<Doctor> {
+import java.util.Comparator;
+
+public class Doctor implements Comparable<Doctor>, Comparator<Doctor> {
+
     private String name;
     private String specialty;
     private String clinic;
     private String npi;
     private String gender;
     private boolean acceptingNewPts;
-    private Comparable<Doctor> comparable;
 
     /***CONSTRUCTORS***/
 
@@ -28,7 +30,6 @@ public class Doctor implements Comparable<Doctor> {
         this.npi = npi;
         this.gender = gender;
         this.acceptingNewPts = acceptingNewPts;
-        this.comparable = compareByPrimaryKey();
     }
 
     /**
@@ -47,7 +48,7 @@ public class Doctor implements Comparable<Doctor> {
      * @param npi  the NPI (National Provider Identifier) of the Doctor
      */
     public Doctor(String name, String npi) {
-            this(name, "Unknown specialty", "Unknown clinic", npi,
+        this(name, "Unknown specialty", "Unknown clinic", npi,
                 "Unknown gender", false);
     }
 
@@ -78,6 +79,32 @@ public class Doctor implements Comparable<Doctor> {
     }
 
     /**
+     * Compares two Doctors NPI's.
+     * Returns 0 if the two Doctors NPI's are equal
+     */
+    @Override
+    public int compare(Doctor doctor, Doctor doctor2) {
+        if (doctor.getNpi().equals(doctor2.getNpi())) {
+            return 0;
+        } else {
+            return doctor.getNpi().compareTo(doctor2.getNpi());
+        }
+    }
+
+    /**
+     * Compares two Doctors names.
+     * Returns 0 if the two Doctors names are equal
+     */
+    @Override
+    public int compareTo(Doctor doctor) {
+        if (this.equals(doctor)) {
+            return 0;
+        } else {
+            return this.getName().compareTo(doctor.getName());
+        }
+    }
+
+    /**
      * Determines whether two Doctor objects are
      * equal by comparing name and npis
      *
@@ -93,45 +120,11 @@ public class Doctor implements Comparable<Doctor> {
         } else {
             Doctor d = (Doctor) o;
 
-            return this.getNpi().equals(d.getNpi()) || this.getName().equals(d.getName());
+            return this.getNpi().equals(d.getNpi()) && this.getName().equals(d.getName());
         }
     }
 
-    /**
-     * Compares two Doctors.
-     * Returns 0 if the two Doctors are equal
-     * If the two Doctors have the same name
-     * returns compareTo of the names
-     * Otherwise, returns compareTo of the npis
-     */
-    @Override
-    public int compareTo(Doctor doctor) {
-        return comparable.compareTo(doctor);
-    }
-
-    public Comparable<Doctor> compareByPrimaryKey() {
-        return new Comparable<Doctor>() {
-            @Override
-            public int compareTo(Doctor doctor) {
-                return Doctor.this.npi.compareTo(doctor.npi);
-            }
-        };
-    }
-
-    public Comparable<Doctor> compareBySecondaryKey() {
-        return new Comparable<Doctor>() {
-            @Override
-            public int compareTo(Doctor doctor) {
-                return Doctor.this.name.compareTo(doctor.name);
-            }
-        };
-    }
-
     /***MUTATORS***/
-
-    public void setComparable(Comparable<Doctor> comparable) {
-        this.comparable = comparable;
-    }
 
     public void setNPI(String npi) {
         this.npi = npi;

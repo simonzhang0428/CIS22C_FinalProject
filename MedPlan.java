@@ -7,10 +7,10 @@ import java.util.Scanner;
 
 public class MedPlan {
 
-    private final int DATABASE_SIZE = 25;
+    private final int DATABASE_SIZE = 27;
 
-    private BST<Doctor> bst1 = new BST<>();
-    private BST<Doctor> bst2 = new BST<>();
+    private BST<Doctor> bst1 = new BST<>(true); // contains objects compared by a primary key (NPI)
+    private BST<Doctor> bst2 = new BST<>(false); // contains objects compared by a secondary key (Name)
     private Hash<Doctor> ht = new Hash<>(DATABASE_SIZE * 2); // thumb rule
     private boolean finished = false;
 
@@ -34,9 +34,9 @@ public class MedPlan {
             Doctor doctor = new Doctor(name, specialty, clinic, NPI, gender, isAccepting.equals("true"));
             medPlan.ht.insert(doctor);
             medPlan.bst1.insert(doctor);
-            doctor.setComparable(doctor.compareBySecondaryKey());
             medPlan.bst2.insert(doctor);
 
+            // Deal with the empty line between data
             if (fileInput.hasNext()) {
                 fileInput.nextLine();
             }
@@ -103,7 +103,6 @@ public class MedPlan {
 
                     // after we inserted a doctor object by npi, change comparable method
                     // and insert to bst2 comparing by name, not NPI !
-                    doc.setComparable(doc.compareBySecondaryKey());
                     medPlan.bst2.insert(doc); // insert into bst2 (comparing by secondary (name) key)
 
                     System.out.println("\n" + name + " has been added!\n");
@@ -123,7 +122,6 @@ public class MedPlan {
 
                     // Create a doctor with a name and a dummy NPI
                     Doctor doc = new Doctor(name, "0000000000");
-                    doc.setComparable(doc.compareBySecondaryKey());
 
                     // Since name is a secondary key, there can be several matches
                     ArrayList<Doctor> matches = medPlan.bst2.findAllMatches(doc);
@@ -133,25 +131,34 @@ public class MedPlan {
                     // If no users found -> there is nothing to remove
                     if (matches.size() != 0) {
                         for (int i = 0; i < matches.size(); i++) {
-                            System.out.println((i + 1) + ". " + matches.get(i).getName() + ": " + matches.get(i).getNpi());
-
-                            Doctor removedDoctor = matches.get(i);
-
-                            medPlan.ht.remove(removedDoctor);
-                            removedDoctor.setComparable(removedDoctor.compareByPrimaryKey());
-                            medPlan.bst1.remove(removedDoctor);
-
-                            removedDoctor.setComparable(removedDoctor.compareBySecondaryKey());
-                            medPlan.bst2.remove(removedDoctor);
+                            System.out.println((i + 1) + ". " + matches.get(i).getName() + " with NPI: " + matches.get(i).getNpi());
                         }
+
+                        int index;
 
                         if (matches.size() == 1) {
-                            System.out.println("\n1 doctors was removed from the database");
+                            index = 0;
                         } else {
-                            System.out.println("\n" + matches.size() + " doctors were removed from the database");
+                            System.out.print("Please type which doctor you want to remove by prompting the number from the list (1 - " + matches.size() + "): ");
+                            index = Integer.parseInt(keyboardInput.nextLine()) - 1;
+
+                            while (index < 0 || index > matches.size() - 1) {
+                                System.out.println("\nIndex should be between 1 and " + matches.size() + "!");
+                                System.out.print("Enter your choice: ");
+                                index = Integer.parseInt(keyboardInput.nextLine()) - 1;
+                            }
                         }
+
+                        Doctor removedDoctor = matches.get(index);
+
+                        System.out.println("\nThe following doctor will be removed!\n");
+                        System.out.println(removedDoctor);
+
+                        medPlan.ht.remove(removedDoctor);
+                        medPlan.bst1.remove(removedDoctor);
+                        medPlan.bst2.remove(removedDoctor);
                     } else {
-                        System.out.println("There are no doctors that can be removed from the database!\n");
+                        System.out.println("There are no doctors with name " + name + " that can be removed from the database!\n");
                     }
 
                     break;
@@ -181,7 +188,6 @@ public class MedPlan {
 
                             // This doctor object contains only NPI, so we could find it it hash table
                             Doctor dummy = new Doctor();
-                            dummy.setComparable(dummy.compareByPrimaryKey());
                             dummy.setNPI(NPI);
 
                             Doctor dbDoctor = medPlan.ht.search(dummy);
@@ -205,12 +211,11 @@ public class MedPlan {
 
                             Doctor dummy = new Doctor();
                             dummy.setName(name);
-                            dummy.setComparable(dummy.compareBySecondaryKey());
 
                             ArrayList<Doctor> docs = medPlan.bst2.findAllMatches(dummy);
 
                             if (docs.size() == 0) {
-                                System.out.println("\nNo doctors with name " + name + " were found");
+                                System.out.println("\nNo doctors with name " + name + " were found\n");
                             } else {
                                 System.out.println("\n" + docs.size() + " doctor(s) with name " + name + " were found\n");
                                 for (Doctor doc : docs) {
@@ -218,6 +223,10 @@ public class MedPlan {
                                 }
                             }
 
+                            break;
+                        }
+                        default: {
+                            System.out.println("\nInvalid Selection!\n");
                             break;
                         }
                     }
@@ -237,6 +246,7 @@ public class MedPlan {
                     switch (choice) {
                         case "U": {
                             System.out.println();
+                            System.out.println("There are " + medPlan.ht.getNumElements() + " doctors in the database\n");
                             System.out.println(medPlan.ht);
                             break;
                         }
@@ -248,7 +258,7 @@ public class MedPlan {
                         }
                         case "S2": {
                             System.out.println();
-                            System.out.println("There are " + medPlan.bst1.getSize() + " doctors in the database\n");
+                            System.out.println("There are " + medPlan.bst2.getSize() + " doctors in the database\n");
                             medPlan.bst2.inOrderPrint();
                             break;
                         }
@@ -292,7 +302,7 @@ public class MedPlan {
         ArrayList<Doctor> docs = hash.getAllObjects();
         String result = getStringData(docs);
 
-        System.out.println("\nThe following data will be saved:\n");
+        System.out.println("\nThe following data of " + docs.size() + " doctors will be saved:\n");
         System.out.println(result);
 
         PrintStream out = new PrintStream(new FileOutputStream(path));
