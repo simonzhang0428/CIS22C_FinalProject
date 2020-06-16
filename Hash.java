@@ -1,6 +1,7 @@
 import java.util.ArrayList;
+import java.util.Comparator;
 
-public class Hash<T extends Comparable<T>> {
+public class Hash<T extends Comparable<T> & Comparator<T>> {
 
     private int numElements;
     private ArrayList<List<T>> Table;
@@ -79,7 +80,7 @@ public class Hash<T extends Comparable<T>> {
         list.placeIterator();
 
         while (!list.offEnd()) {
-            if(list.getIterator().equals(t)) {
+            if (list.getIterator().compare(list.getIterator(), t) == 0) {
                 return list.getIterator();
             }
 
@@ -118,7 +119,7 @@ public class Hash<T extends Comparable<T>> {
 
             list.placeIterator();
             while (!list.offEnd()) {
-                if (list.getIterator().equals(t)) {
+                if (list.getIterator().compare(list.getIterator(), t) == 0) {
                     list.removeIterator();
                     numElements--;
                     return;

@@ -1,7 +1,8 @@
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.NoSuchElementException;
 
-public class BST<T extends Comparable<T>> {
+public class BST<T extends Comparable<T> & Comparator<T>> {
     private class Node {
         private T data;
         private Node left;
@@ -15,14 +16,16 @@ public class BST<T extends Comparable<T>> {
     }
 
     private Node root;
+    private boolean isPrimary;
 
     /*** CONSTRUCTORS ***/
 
     /**
      * Default constructor for BST sets root to null
      */
-    public BST() {
+    public BST(boolean isPrimary) {
         root = null;
+        this.isPrimary = isPrimary;
     }
 
     /**
@@ -188,7 +191,11 @@ public class BST<T extends Comparable<T>> {
             return false;
         }
 
-        return search(data, root);
+        if (isPrimary) {
+            return searchPrimary(data, root);
+        } else {
+            return searchSecondary(data, root);
+        }
     }
 
     /**
@@ -198,19 +205,42 @@ public class BST<T extends Comparable<T>> {
      * @param node the current node to check
      * @return whether the data is stored in the tree
      */
-    private boolean search(T data, Node node) {
+    private boolean searchPrimary(T data, Node node) {
         if (node == null) {
             return false;
         }
 
-        if (data.equals(node.data)) {
+        if (data.compare(data, node.data) == 0) {
+            return true;
+        }
+
+        if (data.compare(data, node.data) < 0) {
+            return searchPrimary(data, node.left);
+        } else {
+            return searchPrimary(data, node.right);
+        }
+    }
+
+    /**
+     * Helper method for the search method
+     *
+     * @param data the data to search for
+     * @param node the current node to check
+     * @return whether the data is stored in the tree
+     */
+    private boolean searchSecondary(T data, Node node) {
+        if (node == null) {
+            return false;
+        }
+
+        if (data.compareTo(node.data) == 0) {
             return true;
         }
 
         if (data.compareTo(node.data) < 0) {
-            return search(data, node.left);
+            return searchSecondary(data, node.left);
         } else {
-            return search(data, node.right);
+            return searchSecondary(data, node.right);
         }
     }
 
@@ -241,7 +271,7 @@ public class BST<T extends Comparable<T>> {
         }
 
         findAllMatches(data, node.left, list);
-        if (node.data.equals(data)) {
+        if (node.data.compareTo(data) == 0) {
             list.add(node.data);
         }
         findAllMatches(data, node.right, list);
@@ -298,7 +328,11 @@ public class BST<T extends Comparable<T>> {
      * @param data the data to insert
      */
     public void insert(T data) {
-        insert(data, root);
+        if (isPrimary) {
+            insertPrimary(data, root);
+        } else {
+            insertSecondary(data, root);
+        }
     }
 
     /**
@@ -308,20 +342,38 @@ public class BST<T extends Comparable<T>> {
      * @param node the current node in the search for the correct location in which
      *             to insert
      */
-    private void insert(T data, Node node) {
+    private void insertPrimary(T data, Node node) {
+        if (node == null) {
+            root = new Node(data);
+        } else if (data.compare(data, node.data) <= 0) {
+            if (node.left == null) {
+                node.left = new Node(data);
+            } else {
+                insertPrimary(data, node.left);
+            }
+        } else {
+            if (node.right == null) {
+                node.right = new Node(data);
+            } else {
+                insertPrimary(data, node.right);
+            }
+        }
+    }
+
+    private void insertSecondary(T data, Node node) {
         if (node == null) {
             root = new Node(data);
         } else if (data.compareTo(node.data) <= 0) {
             if (node.left == null) {
                 node.left = new Node(data);
             } else {
-                insert(data, node.left);
+                insertSecondary(data, node.left);
             }
         } else {
             if (node.right == null) {
                 node.right = new Node(data);
             } else {
-                insert(data, node.right);
+                insertSecondary(data, node.right);
             }
         }
     }
@@ -342,7 +394,11 @@ public class BST<T extends Comparable<T>> {
             throw new NoSuchElementException("remove, element is not found in the tree");
         }
 
-        root = remove(data, root);
+        if (isPrimary) {
+            root = removePrimary(data, root);
+        } else {
+            root = removeSecondary(data, root);
+        }
     }
 
     /**
@@ -352,13 +408,13 @@ public class BST<T extends Comparable<T>> {
      * @param node the current node
      * @return an updated reference variable
      */
-    private Node remove(T data, Node node) {
+    private Node removePrimary(T data, Node node) {
         if (node == null) {
             return null;
-        } else if (data.compareTo(node.data) < 0) {
-            node.left = remove(data, node.left);
-        } else if (data.compareTo(node.data) > 0) {
-            node.right = remove(data, node.right);
+        } else if (data.compare(data, node.data) < 0) {
+            node.left = removePrimary(data, node.left);
+        } else if (data.compare(data, node.data) > 0) {
+            node.right = removePrimary(data, node.right);
         } else {
             if (node.left == null && node.right == null) {
                 node = null;
@@ -369,7 +425,39 @@ public class BST<T extends Comparable<T>> {
             } else {
                 T min = findMin(node.right);
                 node.data = min;
-                node.right = remove(min, node.right);
+                node.right = removePrimary(min, node.right);
+            }
+        }
+
+        return node;
+    }
+
+
+    /**
+     * Helper method to the remove method
+     *
+     * @param data the data to remove
+     * @param node the current node
+     * @return an updated reference variable
+     */
+    private Node removeSecondary(T data, Node node) {
+        if (node == null) {
+            return null;
+        } else if (data.compareTo(node.data) < 0) {
+            node.left = removeSecondary(data, node.left);
+        } else if (data.compareTo(node.data) > 0) {
+            node.right = removeSecondary(data, node.right);
+        } else {
+            if (node.left == null && node.right == null) {
+                node = null;
+            } else if (node.left != null && node.right == null) {
+                node = node.left;
+            } else if (node.left == null) {
+                node = node.right;
+            } else {
+                T min = findMin(node.right);
+                node.data = min;
+                node.right = removeSecondary(min, node.right);
             }
         }
 
