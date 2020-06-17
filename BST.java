@@ -271,7 +271,7 @@ public class BST<T extends Comparable<T> & Comparator<T>> {
         }
 
         findAllMatches(data, node.left, list);
-        if (node.data.compareTo(data) == 0) {
+        if (node.data.equals(data)) {
             list.add(node.data);
         }
         findAllMatches(data, node.right, list);

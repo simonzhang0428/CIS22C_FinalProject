@@ -84,11 +84,7 @@ public class Doctor implements Comparable<Doctor>, Comparator<Doctor> {
      */
     @Override
     public int compare(Doctor doctor, Doctor doctor2) {
-        if (doctor.getNpi().equals(doctor2.getNpi())) {
-            return 0;
-        } else {
-            return doctor.getNpi().compareTo(doctor2.getNpi());
-        }
+        return doctor.getNpi().compareTo(doctor2.getNpi());
     }
 
     /**
@@ -97,10 +93,10 @@ public class Doctor implements Comparable<Doctor>, Comparator<Doctor> {
      */
     @Override
     public int compareTo(Doctor doctor) {
-        if (this.equals(doctor)) {
-            return 0;
+        if (this.name.equals(doctor.name)) {
+            return this.npi.compareTo(doctor.npi);
         } else {
-            return this.getName().compareTo(doctor.getName());
+            return this.name.compareTo(doctor.name);
         }
     }
 
@@ -120,7 +116,7 @@ public class Doctor implements Comparable<Doctor>, Comparator<Doctor> {
         } else {
             Doctor d = (Doctor) o;
 
-            return this.getNpi().equals(d.getNpi()) && this.getName().equals(d.getName());
+            return this.getName().equals(d.getName());
         }
     }
 
@@ -145,7 +141,6 @@ public class Doctor implements Comparable<Doctor>, Comparator<Doctor> {
      * NPI: <npi>
      * Gender: <gender>
      * Accepting new patients: <acceptingNewPts>
-     * Accepted insurance plans: Plan1 Plan2 Plan3 Plan4
      */
     @Override
     public String toString() {
