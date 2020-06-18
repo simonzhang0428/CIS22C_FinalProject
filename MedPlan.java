@@ -7,11 +7,9 @@ import java.util.Scanner;
 
 public class MedPlan {
 
-    private final int DATABASE_SIZE = 27;
-
     private BST<Doctor> bst1 = new BST<>(true); // contains objects compared by a primary key (NPI)
     private BST<Doctor> bst2 = new BST<>(false); // contains objects compared by a secondary key (Name)
-    private Hash<Doctor> ht = new Hash<>(DATABASE_SIZE * 2); // thumb rule
+    private Hash<Doctor> ht;
     private boolean finished = false;
 
     public static void main(String[] args) throws FileNotFoundException {
@@ -21,6 +19,10 @@ public class MedPlan {
 
         File file = new File("doctors.txt");
         Scanner fileInput = new Scanner(file);
+
+        int numberOfDoctors = Integer.parseInt(fileInput.nextLine());
+
+        medPlan.ht = new Hash<>(numberOfDoctors * 2); // thumb rule
 
         // Populate database here
         while (fileInput.hasNextLine()) {
@@ -42,7 +44,9 @@ public class MedPlan {
             }
         }
 
-        System.out.println("Welcome to MedPlan!\n");
+        System.out.println("Welcome to MedPlan!");
+        System.out.println("A database of " + numberOfDoctors + " doctors has been loaded from " + file.getName() + "\n");
+
 
         // While the users doesn't prompt "Q" in the console to quit, request further commands
         while (!medPlan.finished) {
@@ -60,7 +64,7 @@ public class MedPlan {
             System.out.println("Q: Quit\n");
 
             System.out.print("Enter your choice: ");
-            String command = keyboardInput.nextLine();
+            String command = keyboardInput.nextLine().toUpperCase();
 
             switch (command) {
 
@@ -79,9 +83,16 @@ public class MedPlan {
 
                     System.out.print("Enter doctor's NPI: ");
                     String NPI = keyboardInput.nextLine();
+
                     while (containsCharacters(NPI)) {
                         System.out.println("\nNPI should contain only integers!\n");
 
+                        System.out.print("Enter doctor's NPI: ");
+                        NPI = keyboardInput.nextLine();
+                    }
+
+                    while (containsDoctorWithSameNPI(medPlan, NPI)) {
+                        System.out.println("\nA doctor with NPI " + NPI + " already exists!\n");
                         System.out.print("Enter doctor's NPI: ");
                         NPI = keyboardInput.nextLine();
                     }
@@ -166,13 +177,13 @@ public class MedPlan {
 
                 // Searching for a doctor
                 case "S": {
-                    System.out.println("\nSearching For a Doctor!\n"); // searching a doctor (by name and NPI maybe??)
+                    System.out.println("\nSearching For a Doctor!\n"); // searching a doctor
                     System.out.println("Please select one of the following options:\n");
                     System.out.println("P: Search by a primary key (NPI)");
                     System.out.println("S: Search by a secondary key (name)");
 
                     System.out.print("\nEnter your choice: ");
-                    String choice = keyboardInput.nextLine();
+                    String choice = keyboardInput.nextLine().toUpperCase();
 
                     switch (choice) {
                         // Searching for a doctor by a primary key (NPI)
@@ -241,7 +252,7 @@ public class MedPlan {
                     System.out.println("S2: Sorted by name\n");
 
                     System.out.print("Enter your choice: ");
-                    String choice = keyboardInput.nextLine();
+                    String choice = keyboardInput.nextLine().toUpperCase();
 
                     switch (choice) {
                         case "U": {
@@ -295,12 +306,12 @@ public class MedPlan {
         save(medPlan.ht, "autoSave.txt");
         keyboardInput.close();
 
-        System.out.println("Goodbye!");
+        System.out.println("\nGoodbye!");
     }
 
     private static void save(Hash<Doctor> hash, String path) throws FileNotFoundException {
         ArrayList<Doctor> docs = hash.getAllObjects();
-        String result = getStringData(docs);
+        String result = getStringData(docs).trim();
 
         System.out.println("\nThe following data of " + docs.size() + " doctors will be saved:\n");
         System.out.println(result);
@@ -312,6 +323,7 @@ public class MedPlan {
     private static String getStringData(ArrayList<Doctor> docs) {
         StringBuilder sb = new StringBuilder();
 
+        sb.append(docs.size()).append("\n");
         for (Doctor doc : docs) {
             sb.append(doc.getName()).append("\n");
             sb.append(doc.getSpecialty()).append("\n");
@@ -333,5 +345,13 @@ public class MedPlan {
         }
 
         return false;
+    }
+
+    private static boolean containsDoctorWithSameNPI(MedPlan medPlan, String NPI) {
+
+        Doctor dummy = new Doctor();
+        dummy.setNPI(NPI);
+
+        return medPlan.ht.search(dummy) != null;
     }
 }
