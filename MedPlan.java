@@ -118,8 +118,6 @@ public class MedPlan {
 
                     System.out.println("\n" + name + " has been added!\n");
 
-                    // There should also be a way of adding comparable insurance plans
-
                     // After we added all this, add doctor object to both BST's, and HT
                     break;
                 }
@@ -283,11 +281,11 @@ public class MedPlan {
                 }
                 case "W": {
                     System.out.println("\nWriting data to a hard drive!\n");
-                    System.out.print("Please specify where you want to save the data: ");
+                    System.out.print("Please specify the name of the file without file's extension: ");
                     String path = keyboardInput.nextLine();
 
                     // call save function
-                    save(medPlan.ht, path);
+                    save(medPlan.ht, path + ".txt", false);
                     break;
                 }
                 case "Q": {
@@ -303,23 +301,43 @@ public class MedPlan {
 
         // end
         // save before quitting - required by professor -> call save function
-        save(medPlan.ht, "autoSave.txt");
+        save(medPlan.ht, "autoSave.txt", true);
         keyboardInput.close();
+        fileInput.close();
 
         System.out.println("\nGoodbye!");
     }
 
-    private static void save(Hash<Doctor> hash, String path) throws FileNotFoundException {
+    /**
+     * This function saves the database into a .txt file
+     *
+     * @param hash       is a hash table, which contains all the doctors
+     * @param path       is a path or a filename the user specifies, where the database will be saved
+     * @param isAutoSave is a boolean to determine whether the user calls the function
+     *                   or it is called automatically when the user quits the program
+     * @throws FileNotFoundException if the path user specified is invalid
+     */
+    private static void save(Hash<Doctor> hash, String path, boolean isAutoSave) throws FileNotFoundException {
         ArrayList<Doctor> docs = hash.getAllObjects();
         String result = getStringData(docs).trim();
 
-        System.out.println("\nThe following data of " + docs.size() + " doctors will be saved:\n");
-        System.out.println(result);
+        if (!isAutoSave) {
+            System.out.println("\nThe following data of " + docs.size() + " doctors will be saved:\n");
+            System.out.println(result);
+        } else {
+            System.out.println("\nA database of " + docs.size() + " doctors will be automatically saved to autoSave.txt!");
+        }
 
         PrintStream out = new PrintStream(new FileOutputStream(path));
         out.print(result);
     }
 
+    /**
+     * This function combines all the object from the arraylist into one String
+     *
+     * @param docs is a list of doctors obtained from the Hash Table
+     * @return a String of all doctors' objects from the database
+     */
     private static String getStringData(ArrayList<Doctor> docs) {
         StringBuilder sb = new StringBuilder();
 
@@ -337,6 +355,12 @@ public class MedPlan {
         return sb.toString();
     }
 
+    /**
+     * This function determines whether or not a String contains any characters
+     *
+     * @param npi is a doctor's NPI key, which contains only digits
+     * @return whether or not NPI contains any characters
+     */
     private static boolean containsCharacters(String npi) {
         for (char c : npi.toCharArray()) {
             if (!Character.isDigit(c)) {
@@ -347,6 +371,14 @@ public class MedPlan {
         return false;
     }
 
+    /**
+     * This function determines if there is a duplicate doctor in the database based on NPI
+     * The database doesn't permit to have duplicate object with the same unique key
+     *
+     * @param medPlan is a medPlan database object, which contains hash table of doctors
+     * @param NPI     is a doctor's NPI unique key
+     * @return true if database contains a doctor with an NPI a user passed into the function
+     */
     private static boolean containsDoctorWithSameNPI(MedPlan medPlan, String NPI) {
 
         Doctor dummy = new Doctor();
