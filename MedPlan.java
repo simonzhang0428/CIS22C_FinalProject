@@ -330,6 +330,7 @@ public class MedPlan {
 
         PrintStream out = new PrintStream(new FileOutputStream(path));
         out.print(result);
+        out.close();
     }
 
     /**
