@@ -402,7 +402,7 @@ public class BST<T extends Comparable<T> & Comparator<T>> {
     }
 
     /**
-     * Helper method to the remove method
+     * Helper method to the remove method (Primary tree - key is unique)
      *
      * @param data the data to remove
      * @param node the current node
@@ -434,7 +434,7 @@ public class BST<T extends Comparable<T> & Comparator<T>> {
 
 
     /**
-     * Helper method to the remove method
+     * Helper method to the remove method (Secondary tree - key is not unique)
      *
      * @param data the data to remove
      * @param node the current node
